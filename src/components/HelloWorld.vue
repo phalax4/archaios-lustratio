@@ -8,7 +8,7 @@
               Pleaides Word Generator
             </h1>
             <h2 class="subtitle">
-              Using RNN
+              Using Recurrent Neural Networks
             </h2>
           </div>
         </div>
@@ -24,7 +24,7 @@
                   <img src="https://bulma.io/images/bulma-type-white.png" alt="Logo">
                 </a>
                 <span class="navbar-burger burger" data-target="navbarMenuHeroA">
-                                            <span></span>
+                                                  <span></span>
                 <span></span>
                 <span></span>
                 </span>
@@ -32,19 +32,19 @@
               <div id="navbarMenuHeroA" class="navbar-menu">
                 <div class="navbar-end">
                   <!--<a class="navbar-item is-active">
-                                              Home
-                                            </a>
-                  <a class="navbar-item">
-                                              Examples
-                                            </a>
-                  <a class="navbar-item">
-                                              Documentation
-                                            </a>-->
+                                                    Home
+                                                  </a>
+                        <a class="navbar-item">
+                                                    Examples
+                                                  </a>
+                        <a class="navbar-item">
+                                                    Documentation
+                                                  </a>-->
                   <span class="navbar-item">
-                                              <a class="button is-info is-inverted">
-                                                <span class="icon">
-                                                  <i class="fab fa-github"></i>
-                                                </span>
+                                                    <a class="button is-info is-inverted">
+                                                      <span class="icon">
+                                                        <i class="fab fa-github"></i>
+                                                      </span>
                   <span>Download</span>
                   </a>
                   </span>
@@ -58,60 +58,68 @@
         <div class="hero-body">
           <div class="container">
             <div class="columns">
-              <div class="column is-one-third">1</div>
+              <div class="column is-one-third"></div>
   
               <div class="column is-one-third">
-                <h1 class="title">
-                  [ {{ message }} ]
-                </h1>
+                <div class="columns is-mobile is-centered">
+                  <div class="column  is-narrow">
+                    <span class="left-brackets" />
+                  </div>
+                  <div class="column">
+                    <h1 class="title output">
+                      {{ message }}
+                    </h1>
+                  </div>
+                  <div class="column is-narrow">
+                    <span class="right-brackets" />
+                  </div>
+                </div>
                 <div class="has-text-centered">
                   <a class="button is-large is-info is-inverted" v-on:click="greet">Large</a>
                 </div>
-                <!-- <div class="has-text-centered">
-                     <span class="">Message is: {{ message }}</span>
-      
-                    </div>-->
+  
                 <nav class="level section is-mobile">
                   <div class="level-left">
                     <a class="level-item" aria-label="reply">
                       <span class="">
-                           <div class="control">
-                    <div class="tags has-addons">
-                      <span class="tag is-dark ">saved</span>
-                      <span class="tag is-primary">4</span>
+                                 <div class="control">
+                          <div class="tags has-addons">
+                            <span class="tag is-dark ">saved</span>
+                      <span class="tag is-primary"> {{count}}</span>
                   </div>
               </div>
               </span>
               </a>
               <a class="level-item" aria-label="reply">
                 <span class="icon is-medium has-text-primary">
-                          <i class="fas fa-reply" aria-hidden="true"></i>
-                            </span>
+                                <i class="fas fa-reply" aria-hidden="true"></i>
+                                  </span>
               </a>
               <a class="level-item" aria-label="retweet">
                 <span class="icon is-medium has-text-primary">
-                      <i class="fas fa-retweet" aria-hidden="true"></i>
-                    </span>
+                            <i class="fas fa-retweet" aria-hidden="true"></i>
+                          </span>
               </a>
               <a class="level-item" aria-label="like">
                 <span class="icon is-medium has-text-primary">
-                      <i class="fas fa-heart" aria-hidden="true"></i>
-                    </span>
+                            <i class="fas fa-heart" aria-hidden="true"></i>
+                          </span>
               </a>
             </div>
             </nav>
   
           </div>
-          <div class="column is-one-third">3</div>
+          <div class="column is-one-third"></div>
   
   
         </div>
     </div>
   </div>
   </section>
-  <section class="section">
-    <div class="container">
-      <nav class="level is-mobile">
+  
+  <section class="section section-padding-medium">
+    <div class="">
+      <nav class="level">
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Trigrams</p>
@@ -163,22 +171,25 @@
     },
     data() {
       return {
-        message: "Robot"
+        message: "Robot",
+        count: 1
       };
     },
     methods: {
       loadModel() {
         const model = new KerasJS.Model({
-          filepath: "../MapModelSimpleRNN.bin",
+          filepath: "../MaptModelSimpleRNN.bin",
           gpu: false
         });
       },
       greet() {
-        this.message = "Greetings"
+        this.message = "Greetings";
+        this.count = this.count + 1;
+  
       }
     },
     created() {
-      //this.loadModel();
+      this.loadModel();
       //console.log("Model Loaded");
     }
   };
@@ -186,58 +197,58 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="css" scoped>
-  h3 {
-    margin: 40px 0 0;
+  
+  @keyframes example {
+    0% {
+      background-color: red;
+      left: 0px;
+      top: 0px;
+    }
+    25% {
+      background-color: yellow;
+      left: 200px;
+      top: 0px;
+    }
+    50% {
+      background-color: blue;
+      left: 200px;
+      top: 200px;
+    }
+    75% {
+      background-color: green;
+      left: 0px;
+      top: 200px;
+    }
+    100% {
+      background-color: red;
+      left: 0px;
+      top: 0px;
+    }
+  }
+
+  .output{
+    padding-top:4.5%
   }
   
-  ul {
-    list-style-type: none;
-    padding: 0;
+  .brackets {
+    animation-name: example;
+    animation-duration: 4s;
   }
   
-  li {
-    display: inline-block;
-    margin: 0 10px;
-  }
-  
-  a {
-    color: #42b983;
-  }
-  
-  .visible {
+  .left-brackets::before {
+    content: '[';
+    left: 0;
     font-weight: 600;
-    overflow: hidden;
     height: 40px;
-    padding: 0 40px;
-    &:before {
-      content: '[';
-      left: 0;
-      line-height: 40px;
-    }
-    &:after {
-      content: ']';
-      position: absolute;
-      right: 0;
-      line-height: 40px;
-    }
-    &:after,
-    &:before {
-      position: absolute;
-      top: 0;
-      color: #16a085;
-      font-size: 42px;
-      -webkit-animation-name: opacity;
-      -webkit-animation-duration: 2s;
-      -webkit-animation-iteration-count: infinite;
-      animation-name: opacity;
-      animation-duration: 2s;
-      animation-iteration-count: infinite;
-    }
+    font-size:42px;
+    
   }
   
-  p {
-    display: inline;
-    float: left;
-    margin: 0;
+  .right-brackets::before {
+    content: ']';
+    right: 0;
+    font-weight: 600;
+    height: 40px;
+        font-size:42px;
   }
 </style>
