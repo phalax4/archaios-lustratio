@@ -164,6 +164,9 @@
 
 <script>
   import KerasJS from "keras-js";
+  import char2index from "../resources/char2index.json";
+  import index2char from "../resources/index2char.json";
+  import inputChars from "../resources/input_chars.json";
   export default {
     name: "HelloWorld",
     props: {
@@ -172,24 +175,37 @@
     data() {
       return {
         message: "Robot",
-        count: 1
+        count: 1,
+        model: new KerasJS.Model({
+          filepath: "../MaptModelSimpleRNN.bin",
+          gpu: true
+        }),
+
       };
     },
     methods: {
-      loadModel() {
-        const model = new KerasJS.Model({
-          filepath: "../MaptModelSimpleRNN.bin",
-          gpu: false
-        });
-      },
       greet() {
         this.message = "Greetings";
         this.count = this.count + 1;
-  
+      },
+      generate() {
+        //test_idx = np.random.randint(len(input_chars))
+        // get random starting seed from inputChars
+        // one hot encode the starting seet
+        //Xtest = np.zeros((1, SEQLEN, nb_chars))
+        //for i, ch in enumerate(test_chars):
+        //    Xtest[0, i, char2index[ch]] = 1
+        //Predict the embedding distribution of characters
+        //pred = model.predict(Xtest, verbose=0)[0]
+        //Get the index of the most likely character embedding and use that to pred the next char
+        //ypred = index2char[np.argmax(pred)]
+        //continue until you hit a $
+        // make sure generated word is not something already memorized, check similairity score?
       }
     },
     created() {
-      this.loadModel();
+      console.log(inputChars["input"].length);
+     // this.loadModel();
       //console.log("Model Loaded");
     }
   };
