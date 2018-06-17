@@ -10,6 +10,7 @@
   "dependencies": {
     "bulma": "^0.7.1",
     "keras-js": "^1.0.3",
+    "numjs": "^0.16.0",
     "vue": "^2.5.16"
   },
   "devDependencies": {
