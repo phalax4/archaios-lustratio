@@ -24,7 +24,7 @@
                   <img src="https://bulma.io/images/bulma-type-white.png" alt="Logo">
                 </a>
                 <span class="navbar-burger burger" data-target="navbarMenuHeroA">
-                                                          <span></span>
+                                                                    <span></span>
                 <span></span>
                 <span></span>
                 </span>
@@ -32,19 +32,19 @@
               <div id="navbarMenuHeroA" class="navbar-menu">
                 <div class="navbar-end">
                   <!--<a class="navbar-item is-active">
-                                                            Home
-                                                          </a>
-                                <a class="navbar-item">
-                                                            Examples
-                                                          </a>
-                                <a class="navbar-item">
-                                                            Documentation
-                                                          </a>-->
+                                                                      Home
+                                                                    </a>
+                                          <a class="navbar-item">
+                                                                      Examples
+                                                                    </a>
+                                          <a class="navbar-item">
+                                                                      Documentation
+                                                                    </a>-->
                   <span class="navbar-item">
-                                                            <a class="button is-info is-inverted">
-                                                              <span class="icon">
-                                                                <i class="fab fa-github"></i>
-                                                              </span>
+                                                                      <a class="button is-info is-inverted">
+                                                                        <span class="icon">
+                                                                          <i class="fab fa-github"></i>
+                                                                        </span>
                   <span>Download</span>
                   </a>
                   </span>
@@ -82,9 +82,9 @@
                   <div class="level-left">
                     <a class="level-item" aria-label="reply">
                       <span class="">
-                                         <div class="control">
-                                  <div class="tags has-addons">
-                                    <span class="tag is-dark ">saved</span>
+                                                   <div class="control">
+                                            <div class="tags has-addons">
+                                              <span class="tag is-dark ">saved</span>
                       <span class="tag is-primary"> {{count}}</span>
                   </div>
               </div>
@@ -92,18 +92,18 @@
               </a>
               <a class="level-item" aria-label="reply">
                 <span class="icon is-medium has-text-primary">
-                                        <i class="fas fa-reply" aria-hidden="true"></i>
-                                          </span>
+                                                  <i class="fas fa-reply" aria-hidden="true"></i>
+                                                    </span>
               </a>
               <a class="level-item" aria-label="retweet">
                 <span class="icon is-medium has-text-primary">
-                                    <i class="fas fa-retweet" aria-hidden="true"></i>
-                                  </span>
+                                              <i class="fas fa-retweet" aria-hidden="true"></i>
+                                            </span>
               </a>
               <a class="level-item" aria-label="like">
                 <span class="icon is-medium has-text-primary">
-                                    <i class="fas fa-heart" aria-hidden="true"></i>
-                                  </span>
+                                              <i class="fas fa-heart" aria-hidden="true"></i>
+                                            </span>
               </a>
             </div>
             </nav>
@@ -179,8 +179,8 @@
         message: "Robot",
         count: 1,
         model: new KerasJS.Model({
-          filepath: "../MaptModelSimpleRNN.bin",
-          gpu: true
+          filepath: "../MaptModelSimpleRNN_50.bin",
+          gpu: false
         })
       };
     },
@@ -193,41 +193,52 @@
       argMax(array) {
         return array.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
       },
+      oneHotEncode(Xchars) {
+        //Return a flattened one hot encoded array
+        let Xtest = numjs.zeros([1, 10, Object.keys(char2index).length], 'float32');
+        for (let i = 0; i < Xchars.length; i++) {
+          Xtest.set(0, i, char2index[Xchars[i]], 1);
+        }
+  
+        //console.log(Xtest)
+        return Xtest.flatten()["selection"]["data"];
+      },
   
       generate() {
         //console.log(Math.floor(Math.random() * input_chars["input"].length));
+  
         let sample_idx = Math.floor(Math.random() * input_chars["input"].length);
-        console.log(sample_idx);
-        let Xtest = numjs.zeros([1, 10, Object.keys(char2index).length], 'float32');
-        console.log(Xtest)
-  
         let test_chars = input_chars["input"][sample_idx];
-        console.log(test_chars);
-        for (let i = 0; i < test_chars.length; i++) {
-          Xtest[0, i, char2index[test_chars[i]]] = 1;
+        // console.log(test_chars);
+        for (let c = 0; c < 20; c++) {
+          let XtestFlat = this.oneHotEncode(test_chars);
+  
+          this.model
+            .ready()
+            .then(() => {
+              const inputData = {
+                input: XtestFlat
+              }
+              return this.model.predict(inputData)
+            })
+            .then(outputData => {
+              // console.log(this.argMax(Array.from(outputData['output'])));
+              //console.log(this.argMax(Array.from(outputData['output'])));
+              console.log(outputData)
+              var ypred = index2char[this.argMax(Array.from(outputData['output'])).toString()];
+              console.log(ypred);
+              test_chars += ypred;
+              console.log(test_chars);
+              this.message = test_chars;
+  
+            })
+            .catch(err => {
+              // handle error
+              console.error(err)
+            });
         }
-        console.log(Xtest)
+        // console.log(test_chars);
   
-        let XtestFlat = Xtest.flatten()["selection"]["data"];
-  
-        this.model
-          .ready()
-          .then(() => {
-            const inputData = {
-              input: XtestFlat
-            }
-            return this.model.predict(inputData)
-          })
-          .then(outputData => {
-            console.log(this.argMax(Array.from(outputData['output'])));
-            var v = index2char[this.argMax(Array.from(outputData['output'])).toString()];
-            console.log(v);
-  
-          })
-          .catch(err => {
-            // handle error
-            console.log(err)
-          });
         //pred = this.model.predict(XtestFlat)[0];
         // ypred = index2char[numjs.argmax]
         //test_idx = np.random.randint(len(input_chars))
