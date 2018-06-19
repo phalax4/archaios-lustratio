@@ -24,7 +24,7 @@
                   <img src="https://bulma.io/images/bulma-type-white.png" alt="Logo">
                 </a>
                 <span class="navbar-burger burger" data-target="navbarMenuHeroA">
-                                                                    <span></span>
+                                                                                <span></span>
                 <span></span>
                 <span></span>
                 </span>
@@ -32,19 +32,19 @@
               <div id="navbarMenuHeroA" class="navbar-menu">
                 <div class="navbar-end">
                   <!--<a class="navbar-item is-active">
-                                                                      Home
-                                                                    </a>
-                                          <a class="navbar-item">
-                                                                      Examples
-                                                                    </a>
-                                          <a class="navbar-item">
-                                                                      Documentation
-                                                                    </a>-->
+                                                                                  Home
+                                                                                </a>
+                                                      <a class="navbar-item">
+                                                                                  Examples
+                                                                                </a>
+                                                      <a class="navbar-item">
+                                                                                  Documentation
+                                                                                </a>-->
                   <span class="navbar-item">
-                                                                      <a class="button is-info is-inverted">
-                                                                        <span class="icon">
-                                                                          <i class="fab fa-github"></i>
-                                                                        </span>
+                                                                                  <a class="button is-info is-inverted">
+                                                                                    <span class="icon">
+                                                                                      <i class="fab fa-github"></i>
+                                                                                    </span>
                   <span>Download</span>
                   </a>
                   </span>
@@ -75,16 +75,16 @@
                   </div>
                 </div>
                 <div class="has-text-centered">
-                  <a class="button is-large is-info is-inverted" v-on:click="greet">Large</a>
+                  <a class="button is-large is-info is-inverted" v-on:click="doTensorProcess">Large</a>
                 </div>
   
                 <nav class="level section is-mobile">
                   <div class="level-left">
                     <a class="level-item" aria-label="reply">
                       <span class="">
-                                                   <div class="control">
-                                            <div class="tags has-addons">
-                                              <span class="tag is-dark ">saved</span>
+                                                               <div class="control">
+                                                        <div class="tags has-addons">
+                                                          <span class="tag is-dark ">saved</span>
                       <span class="tag is-primary"> {{count}}</span>
                   </div>
               </div>
@@ -92,18 +92,18 @@
               </a>
               <a class="level-item" aria-label="reply">
                 <span class="icon is-medium has-text-primary">
-                                                  <i class="fas fa-reply" aria-hidden="true"></i>
-                                                    </span>
+                                                              <i class="fas fa-reply" aria-hidden="true"></i>
+                                                                </span>
               </a>
               <a class="level-item" aria-label="retweet">
                 <span class="icon is-medium has-text-primary">
-                                              <i class="fas fa-retweet" aria-hidden="true"></i>
-                                            </span>
+                                                          <i class="fas fa-retweet" aria-hidden="true"></i>
+                                                        </span>
               </a>
               <a class="level-item" aria-label="like">
                 <span class="icon is-medium has-text-primary">
-                                              <i class="fas fa-heart" aria-hidden="true"></i>
-                                            </span>
+                                                          <i class="fas fa-heart" aria-hidden="true"></i>
+                                                        </span>
               </a>
             </div>
             </nav>
@@ -168,7 +168,9 @@
   import index2char from "../resources/index2char.json";
   import input_chars from "../resources/input_chars.json";
   import numjs from "numjs";
-  
+  import * as tf from '@tensorflow/tfjs';
+  import hotData from '../resources/input_test.json';
+
   export default {
     name: "HelloWorld",
     props: {
@@ -185,12 +187,47 @@
       };
     },
     methods: {
+      doTensorProcess() {
+        async function asyncFun() {
+  
+          return tf.loadModel('../tfjs_25/model.json');
+        }
+        (async() => {
+          console.log("Loaded");
+          const modelT = await asyncFun();
+          let sample_idx = Math.floor(Math.random() * input_chars["input"].length);
+          let test_chars = input_chars["input"][sample_idx];
+          let hotDataDecoded = hotData["input"]
+
+          for (let t = 0; t < 100; t++) {
+            //let XinputEncoded = this.oneHotEncode(test_chars);
+
+           // let Xinput = tf.tensor(XinputEncoded.tolist());
+           let Xinput = tf.tensor(hotDataDecoded[t]);
+            // result.print(true);
+            const predictedClass = tf.tidy(() => {
+              const predictions = modelT.predict(Xinput);
+              return predictions.as1D().argMax();
+            });
+            const classId = (await predictedClass.data())[0];
+            predictedClass.dispose();
+            let ypred = index2char[classId];
+            console.log(ypred);
+            test_chars+=ypred
+            
+          }
+          console.log(test_chars);
+           this.message = test_chars;
+
+        })()
+  
+      },
       greet() {
         this.message = "Greetings";
         this.count = this.count + 1;
         this.generate();
       },
-      argMax(array) {
+      arggMax(array) {
         return array.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
       },
       oneHotEncode(Xchars) {
@@ -201,7 +238,7 @@
         }
   
         //console.log(Xtest)
-        return Xtest.flatten()["selection"]["data"];
+        return Xtest;
       },
   
       generate() {
