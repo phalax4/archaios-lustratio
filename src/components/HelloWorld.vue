@@ -163,7 +163,6 @@
 </template>
 
 <script>
-  import KerasJS from "keras-js";
   import char2index from "../resources/char2index.json";
   import index2char from "../resources/index2char.json";
   import input_chars from "../resources/input_chars.json";
@@ -179,21 +178,15 @@
     data() {
       return {
         message: "Robot",
-        count: 1,
-        model: new KerasJS.Model({
-          filepath: "../MaptModelSimpleRNN_50.bin",
-          gpu: false
-        })
+        count: 1
       };
     },
     methods: {
       doTensorProcess() {
         async function asyncFun() {
-  
           return tf.loadModel('../tfjs_75/model.json');
         }
         (async() => {
-          console.log("Loaded");
           const modelT = await asyncFun();
           let sample_idx = Math.floor(Math.random() * input_chars["input"].length);
           let test_chars = input_chars["input"][sample_idx];
@@ -202,9 +195,6 @@
           for (let t = 0; t < 100; t++) {
             let XinputEncoded = this.oneHotEncode(test_chars);
             let Xinput = tf.tensor(XinputEncoded.tolist());
-  
-            // let Xinput = tf.tensor(hotDataDecoded[t]);
-            // result.print(true);
             const predictedClass = tf.tidy(() => {
               const predictions = modelT.predict(Xinput);
               return predictions.as1D().argMax();
@@ -217,99 +207,21 @@
             test_chars += ypred
   
           }
-          console.log(test_chars.length);
           this.message = master;
-  
         })()
   
       },
-      greet() {
-        this.message = "Greetings";
-        this.count = this.count + 1;
-        this.generate();
-      },
-      arggMax(array) {
-        return array.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
-      },
+      
       oneHotEncode(Xchars) {
         //Return a flattened one hot encoded array
         let Xtest = numjs.zeros([1, 10, Object.keys(char2index).length], 'float32');
-        /*  let Xnew = [];
-  
-         for(let seqlength = 0; seqlength < 10; seqlength++){
-           let Xchar = [];
-           for(let k = 0; k < Object.keys(char2index).length; k++){
-             Xchar.push(0.0);
-           }
-           Xnew.push(Xchar);
-         }
-         let Xwrap = [];
-         Xwrap.push(Xnew); */
-  
         for (let i = 0; i < Xchars.length - 1; i++) {
           Xtest.set(0, i, char2index[Xchars[i]], 1);
-          // Xwrap[0][i][parseInt(char2index[Xchars[i]])] = 1;
         }
-  
-        //console.log(Xtest)
         return Xtest;
-      },
-  
-      generate() {
-        //console.log(Math.floor(Math.random() * input_chars["input"].length));
-  
-        let sample_idx = Math.floor(Math.random() * input_chars["input"].length);
-        let test_chars = input_chars["input"][sample_idx];
-        // console.log(test_chars);
-        let master = test_chars;
-        for (let c = 0; c < 20; c++) {
-          let XtestFlat = this.oneHotEncode(test_chars);
-  
-          this.model
-            .ready()
-            .then(() => {
-              const inputData = {
-                input: XtestFlat
-              }
-              return this.model.predict(inputData)
-            })
-            .then(outputData => {
-              // console.log(this.argMax(Array.from(outputData['output'])));
-              //console.log(this.argMax(Array.from(outputData['output'])));
-  
-              var ypred = index2char[this.argMax(Array.from(outputData['output'])).toString()];
-              //console.log(ypred);
-              test_chars = test_chars.slice(1)
-              master += ypred
-              test_chars += ypred
-              this.message = master;
-  
-            })
-            .catch(err => {
-              // handle error
-              console.error(err)
-            });
-        }
-        // console.log(test_chars);
-  
-        //pred = this.model.predict(XtestFlat)[0];
-        // ypred = index2char[numjs.argmax]
-        //test_idx = np.random.randint(len(input_chars))
-        // get random starting seed from inputChars
-        // one hot encode the starting seet
-        //Xtest = np.zeros((1, SEQLEN, nb_chars))
-        //for i, ch in enumerate(test_chars):
-        //    Xtest[0, i, char2index[ch]] = 1
-        //Predict the embedding distribution of characters
-        //pred = model.predict(Xtest, verbose=0)[0]
-        //Get the index of the most likely character embedding and use that to pred the next char
-        //ypred = index2char[np.argmax(pred)]
-        //continue until you hit a $
-        // make sure generated word is not something already memorized, check similairity score?
       }
     },
     created() {
-      //console.log("Model Loaded");
     }
   };
 </script>
