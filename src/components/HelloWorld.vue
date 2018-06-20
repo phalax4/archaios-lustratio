@@ -24,7 +24,7 @@
                   <img src="https://bulma.io/images/bulma-type-white.png" alt="Logo">
                 </a>
                 <span class="navbar-burger burger" data-target="navbarMenuHeroA">
-                                                                                <span></span>
+                                                                                  <span></span>
                 <span></span>
                 <span></span>
                 </span>
@@ -32,19 +32,19 @@
               <div id="navbarMenuHeroA" class="navbar-menu">
                 <div class="navbar-end">
                   <!--<a class="navbar-item is-active">
-                                                                                  Home
-                                                                                </a>
-                                                      <a class="navbar-item">
-                                                                                  Examples
-                                                                                </a>
-                                                      <a class="navbar-item">
-                                                                                  Documentation
-                                                                                </a>-->
+                                                                                    Home
+                                                                                  </a>
+                                                        <a class="navbar-item">
+                                                                                    Examples
+                                                                                  </a>
+                                                        <a class="navbar-item">
+                                                                                    Documentation
+                                                                                  </a>-->
                   <span class="navbar-item">
-                                                                                  <a class="button is-info is-inverted">
-                                                                                    <span class="icon">
-                                                                                      <i class="fab fa-github"></i>
-                                                                                    </span>
+                                                                                    <a class="button is-info is-inverted">
+                                                                                      <span class="icon">
+                                                                                        <i class="fab fa-github"></i>
+                                                                                      </span>
                   <span>Download</span>
                   </a>
                   </span>
@@ -82,9 +82,9 @@
                   <div class="level-left">
                     <a class="level-item" aria-label="reply">
                       <span class="">
-                                                               <div class="control">
-                                                        <div class="tags has-addons">
-                                                          <span class="tag is-dark ">saved</span>
+                                                                 <div class="control">
+                                                          <div class="tags has-addons">
+                                                            <span class="tag is-dark ">saved</span>
                       <span class="tag is-primary"> {{count}}</span>
                   </div>
               </div>
@@ -92,18 +92,18 @@
               </a>
               <a class="level-item" aria-label="reply">
                 <span class="icon is-medium has-text-primary">
-                                                              <i class="fas fa-reply" aria-hidden="true"></i>
-                                                                </span>
+                                                                <i class="fas fa-reply" aria-hidden="true"></i>
+                                                                  </span>
               </a>
               <a class="level-item" aria-label="retweet">
                 <span class="icon is-medium has-text-primary">
-                                                          <i class="fas fa-retweet" aria-hidden="true"></i>
-                                                        </span>
+                                                            <i class="fas fa-retweet" aria-hidden="true"></i>
+                                                          </span>
               </a>
               <a class="level-item" aria-label="like">
                 <span class="icon is-medium has-text-primary">
-                                                          <i class="fas fa-heart" aria-hidden="true"></i>
-                                                        </span>
+                                                            <i class="fas fa-heart" aria-hidden="true"></i>
+                                                          </span>
               </a>
             </div>
             </nav>
@@ -170,7 +170,7 @@
   import numjs from "numjs";
   import * as tf from '@tensorflow/tfjs';
   import hotData from '../resources/input_test.json';
-
+  
   export default {
     name: "HelloWorld",
     props: {
@@ -190,7 +190,7 @@
       doTensorProcess() {
         async function asyncFun() {
   
-          return tf.loadModel('../tfjs_25/model.json');
+          return tf.loadModel('../tfjs_75/model.json');
         }
         (async() => {
           console.log("Loaded");
@@ -198,12 +198,12 @@
           let sample_idx = Math.floor(Math.random() * input_chars["input"].length);
           let test_chars = input_chars["input"][sample_idx];
           let hotDataDecoded = hotData["input"]
-
+          let master = test_chars;
           for (let t = 0; t < 100; t++) {
-            //let XinputEncoded = this.oneHotEncode(test_chars);
-
-           // let Xinput = tf.tensor(XinputEncoded.tolist());
-           let Xinput = tf.tensor(hotDataDecoded[t]);
+            let XinputEncoded = this.oneHotEncode(test_chars);
+            let Xinput = tf.tensor(XinputEncoded.tolist());
+  
+            // let Xinput = tf.tensor(hotDataDecoded[t]);
             // result.print(true);
             const predictedClass = tf.tidy(() => {
               const predictions = modelT.predict(Xinput);
@@ -212,13 +212,14 @@
             const classId = (await predictedClass.data())[0];
             predictedClass.dispose();
             let ypred = index2char[classId];
-            console.log(ypred);
-            test_chars+=ypred
-            
+            test_chars = test_chars.slice(1)
+            master += ypred
+            test_chars += ypred
+  
           }
-          console.log(test_chars);
-           this.message = test_chars;
-
+          console.log(test_chars.length);
+          this.message = master;
+  
         })()
   
       },
@@ -233,8 +234,21 @@
       oneHotEncode(Xchars) {
         //Return a flattened one hot encoded array
         let Xtest = numjs.zeros([1, 10, Object.keys(char2index).length], 'float32');
-        for (let i = 0; i < Xchars.length; i++) {
+        /*  let Xnew = [];
+  
+         for(let seqlength = 0; seqlength < 10; seqlength++){
+           let Xchar = [];
+           for(let k = 0; k < Object.keys(char2index).length; k++){
+             Xchar.push(0.0);
+           }
+           Xnew.push(Xchar);
+         }
+         let Xwrap = [];
+         Xwrap.push(Xnew); */
+  
+        for (let i = 0; i < Xchars.length - 1; i++) {
           Xtest.set(0, i, char2index[Xchars[i]], 1);
+          // Xwrap[0][i][parseInt(char2index[Xchars[i]])] = 1;
         }
   
         //console.log(Xtest)
@@ -247,6 +261,7 @@
         let sample_idx = Math.floor(Math.random() * input_chars["input"].length);
         let test_chars = input_chars["input"][sample_idx];
         // console.log(test_chars);
+        let master = test_chars;
         for (let c = 0; c < 20; c++) {
           let XtestFlat = this.oneHotEncode(test_chars);
   
@@ -261,12 +276,13 @@
             .then(outputData => {
               // console.log(this.argMax(Array.from(outputData['output'])));
               //console.log(this.argMax(Array.from(outputData['output'])));
-              console.log(outputData)
+  
               var ypred = index2char[this.argMax(Array.from(outputData['output'])).toString()];
-              console.log(ypred);
-              test_chars += ypred;
-              console.log(test_chars);
-              this.message = test_chars;
+              //console.log(ypred);
+              test_chars = test_chars.slice(1)
+              master += ypred
+              test_chars += ypred
+              this.message = master;
   
             })
             .catch(err => {
