@@ -187,6 +187,9 @@
           return tf.loadModel('../tfjs_75/model.json');
         }
         (async() => {
+
+                  const nb_chars = 55;
+        const SEQLEN = 10;
           const modelT = await asyncFun();
           let sample_idx = Math.floor(Math.random() * input_chars["input"].length);
           let test_chars = input_chars["input"][sample_idx];
@@ -194,7 +197,7 @@
           let master = test_chars;
           for (let t = 0; t < 100; t++) {
             let XinputEncoded = this.oneHotEncode(test_chars);
-            let Xinput = tf.tensor(XinputEncoded.tolist());
+            let Xinput = tf.tensor(XinputEncoded, [1, SEQLEN, nb_chars]);
             const predictedClass = tf.tidy(() => {
               const predictions = modelT.predict(Xinput);
               return predictions.as1D().argMax();
@@ -205,6 +208,7 @@
             test_chars = test_chars.slice(1)
             master += ypred
             test_chars += ypred
+            console.log(ypred);
   
           }
           this.message = master;
@@ -212,13 +216,23 @@
   
       },
       
-      oneHotEncode(Xchars) {
+      oneHotEncode(test_chars_array) {
+        const nb_chars = 55;
+        const SEQLEN = 10;
+
         //Return a flattened one hot encoded array
-        let Xtest = numjs.zeros([1, 10, Object.keys(char2index).length], 'float32');
-        for (let i = 0; i < Xchars.length - 1; i++) {
-          Xtest.set(0, i, char2index[Xchars[i]], 1);
+         var input_array = [];
+          for(var i = 0; i < SEQLEN; i++){
+            for(var k = 0 ; k < nb_chars; k++){
+
+              if(k === char2index[test_chars_array[i]]){
+                  input_array.push(1.0);
+              }else{
+                input_array.push(0.0);
+              }
+          }
         }
-        return Xtest;
+        return input_array;
       }
     },
     created() {
