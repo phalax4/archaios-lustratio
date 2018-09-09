@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "@tensorflow/tfjs": "^0.11.6",
+    "baffle": "^0.3.6",
     "bulma": "^0.7.1",
+    "epic-spinners": "^1.0.3",
     "numjs": "^0.16.0",
     "tfjs": "^0.6.0",
     "vue": "^2.5.16",

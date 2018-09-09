@@ -9,8 +9,9 @@ Vue.use(Vuex)
 
 const state = {
   model: {},
-  textStatus: '',
-  text: ''
+  textStatus: false,
+  text: '',
+  modelStatus: ''
 }
 
 const store = new Vuex.Store({
@@ -20,30 +21,44 @@ const store = new Vuex.Store({
         return state.model
       },
       isTextLoading: (state) => {
-        return state.textStatus;
+        return state.textStatus
+      },
+      isModelLoading: (state) => {
+        if(state.modelStatus === 'pending'){
+          return true;
+        }
+        return false;
       }
     },
     actions: {
       async loadModel (context) {
+        context.commit('pendingModel');
+
         try{
           const m = await tf.loadModel('../tfjs_75_pled/model.json')
             context.commit('loadModel', m)
+          context.commit('successModel');
+
         }catch (err){
             console.error(err);
+            //context.commit('fail');
+
         }
       },
      async generateText (context, model) {
-       context.commit('pending');
-        try{
-          const text = await appService.generateText(model);
-          console.log(text);
-         context.commit('success');
-          context.commit('setText', text);
-        }catch (err){
-            console.error(err);
-            context.commit('fail');
-        }
+      context.commit('pendingModel');
+      try{
+         
+        context.commit('setText',  await appService.generateText(model));
+
+      }catch (err){
+          console.error(err);
+          context.commit('fail');
       }
+      context.commit('successModel');
+
+      },
+      
     },
     mutations: {
       loadModel (state, model) {
@@ -53,14 +68,22 @@ const store = new Vuex.Store({
         state.text = text;
       },
       pending (state) {
-        state.textStatus = 'pending';
+        state.textStatus = true;
       },
       fail (state){
-        state.textStatus = 'fail';
+        state.textStatus = false;
       },
       success (state) {
-        state.textStatus = 'success';
+        state.textStatus = false;
+      },
+
+      pendingModel (state){
+        state.modelStatus = 'pending';
+      },
+      successModel(state){
+        state.modelStatus = 'success';
       }
+
     }
 
   })

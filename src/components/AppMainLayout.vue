@@ -1,10 +1,10 @@
 <template>
   <div class="columns is-centered">
     <div class="column">
-     <app-title></app-title>
+      <app-title></app-title>
   
-  <section class="hero is-info is-medium">
-<app-header></app-header>
+      <section class="hero is-info is-medium">
+        <app-header></app-header>
   
         <!-- Hero content: will be in the middle -->
         <div class="hero-body">
@@ -13,30 +13,56 @@
               <div class="column is-one-third"></div>
   
               <div class="column is-one-third">
-                <div class="columns is-mobile is-centered">
-                  <div class="column  is-narrow">
-                    <span class="left-brackets" />
+                <div>
+  
+                  <div>
+                    <nav class="level">
+                      <div class="level-left">
+                        <div class="level-item ">
+                          <div>
+                            <span class="left-brackets" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="level-item has-text-centered">
+                        <div v-show="isModelLoading">
+                          <hollow-dots-spinner :animation-duration="1000" :dot-size="15" :dots-num="3" color="#ff1d5e" />
+                        </div>
+                        <div v-show="!isModelLoading">
+                          <h1 class="title output ">
+                            {{text}}
+                            <div ref="myDiv" class="baz">qwe123</div>
+
+                          </h1>
+  
+                        </div>
+  
+                      </div>
+  
+                      <div class="level-right">
+                        <div class="level-item">
+                          <div>
+                            <div class="right-brackets" />
+                          </div>
+                        </div>
+                      </div>
+                    </nav>
                   </div>
-                  <div class="column">
-                    <h1 class="title output">
-                      {{ text }}
-                    </h1>
-                  </div>
-                  <div class="column is-narrow">
-                    <span class="right-brackets" />
-                  </div>
+  
                 </div>
+  
+  
                 <div class="has-text-centered">
-                  <a class="button is-large is-info is-inverted" v-on:click="doTensorProcess">Large</a>
+                  <a class="button is-large is-primary" v-bind:class="{ 'is-loading': textStatus || isModelLoading }" v-on:click="doTensorProcess">Go!</a>
                 </div>
   
                 <nav class="level section is-mobile">
                   <div class="level-left">
                     <a class="level-item" aria-label="reply">
                       <span class="">
-                                                                   <div class="control">
-                                                            <div class="tags has-addons">
-                                                              <span class="tag is-dark ">saved</span>
+                                                                           <div class="control">
+                                                                    <div class="tags has-addons">
+                                                                      <span class="tag is-dark ">saved</span>
                       <span class="tag is-primary"> {{count}}</span>
                   </div>
               </div>
@@ -44,18 +70,18 @@
               </a>
               <a class="level-item" aria-label="reply">
                 <span class="icon is-medium has-text-primary">
-                                                                  <i class="fas fa-reply" aria-hidden="true"></i>
-                                                                    </span>
+                                                                          <i class="fas fa-reply" aria-hidden="true"></i>
+                                                                            </span>
               </a>
               <a class="level-item" aria-label="retweet">
                 <span class="icon is-medium has-text-primary">
-                                                              <i class="fas fa-retweet" aria-hidden="true"></i>
-                                                            </span>
+                                                                      <i class="fas fa-retweet" aria-hidden="true"></i>
+                                                                    </span>
               </a>
               <a class="level-item" aria-label="like">
                 <span class="icon is-medium has-text-primary">
-                                                              <i class="fas fa-heart" aria-hidden="true"></i>
-                                                            </span>
+                                                                      <i class="fas fa-heart" aria-hidden="true"></i>
+                                                                    </span>
               </a>
             </div>
             </nav>
@@ -70,21 +96,27 @@
   </section>
   <app-info></app-info>
 
-    <app-footer></app-footer>
-
+  <app-footer></app-footer>
+  
   </div>
   
   </div>
 </template>
 
 <script>
-
   import AppFooter from './AppFooter.vue';
   import AppInfo from './AppInfo.vue';
   import AppTitle from './AppTitle.vue';
   import AppHeader from './AppHeader.vue';
-  import { mapGetters, mapState  } from 'vuex'
-
+  import {
+    HollowDotsSpinner
+  } from 'epic-spinners'
+  import baffle from 'baffle';
+  import {
+    mapGetters,
+    mapState
+  } from 'vuex'
+  
   export default {
     name: "AppMainLayout",
     props: {
@@ -94,18 +126,19 @@
       'app-footer': AppFooter,
       'app-info': AppInfo,
       'app-title': AppTitle,
-      'app-header': AppHeader
+      'app-header': AppHeader,
+      'hollow-dots-spinner': HollowDotsSpinner
   
     },
     computed: {
       ...mapGetters({
         model: 'getModel',
-        textStatus: 'isTextLoading'
+        isModelLoading: 'isModelLoading'
       }),
       ...mapState([
         'model',
         'text',
-        'textStatus'
+        'textStatus',
       ])
     },
     data() {
@@ -116,13 +149,24 @@
     },
     methods: {
       doTensorProcess() {
+  
         this.$store.dispatch('generateText', this.model);
-      
+  
   
       },
     },
     created() {
-        this.$store.dispatch('loadModel')
+      this.$store.dispatch('loadModel');
+   
+
+    },
+    mounted() {
+         let b = baffle('.baz', {
+    characters: '+-•~!=*',
+        speed: 200
+      });
+      b.start();
+                 console.log(this.$refs.myDiv);
     }
   };
 </script>

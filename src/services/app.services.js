@@ -7,14 +7,14 @@ const appService = {
          console.log(modelT);
         let test_chars = "nte"; //input_chars["input"][sample_idx];
         let master = test_chars;
-        (async() => {
+       // (async() => {
         const nb_chars = 154;
         const SEQLEN = 3;
 
         let sample_idx = Math.floor(Math.random() * input_chars["input"].length);
        
         var test_chars_array = test_chars.split("");
-        for (let t = 0; t < 50; t++) {
+        for (let t = 0; t < 10; t++) {
           //let XinputEncoded = this.oneHotEncode(test_chars.split(""));
 
           var input_array = [];
@@ -34,7 +34,7 @@ const appService = {
             const predictions = modelT.predict(Xinput);
             return predictions.as1D().argMax();
           });
-          const classId = predictedClass.dataSync()[0];
+          const classId = await predictedClass.dataSync()[0];
           console.log(classId);
 
           let ypred = index2char[classId];
@@ -43,7 +43,7 @@ const appService = {
           master += ypred
           test_chars_array.push(ypred);
         }
-    })();
+    //})();
 
     return master;
  
