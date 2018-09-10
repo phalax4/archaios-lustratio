@@ -20,7 +20,7 @@
                       <div class="level-left">
                         <div class="level-item ">
                           <div>
-                            <span class="left-brackets" />
+                            <span class="left-brackets brackets" />
                           </div>
                         </div>
                       </div>
@@ -30,9 +30,8 @@
                         </div>
                         <div v-show="!isModelLoading">
                           <h1 class="title output ">
-                            {{text}}
-                            <div ref="myDiv" class="baz">qwe123</div>
-
+                            <div ref="myDiv" v-show="clicked" class="baz">nomos velta m.</div>
+  
                           </h1>
   
                         </div>
@@ -42,7 +41,7 @@
                       <div class="level-right">
                         <div class="level-item">
                           <div>
-                            <div class="right-brackets" />
+                            <div class="right-brackets brackets" />
                           </div>
                         </div>
                       </div>
@@ -53,16 +52,16 @@
   
   
                 <div class="has-text-centered">
-                  <a class="button is-large is-primary" v-bind:class="{ 'is-loading': textStatus || isModelLoading }" v-on:click="doTensorProcess">Go!</a>
+                  <a class="button is-large is-primary" v-bind:class="{ 'is-loading': isModelLoading }" v-on:click="doTensorProcess">Go!</a>
                 </div>
   
                 <nav class="level section is-mobile">
                   <div class="level-left">
                     <a class="level-item" aria-label="reply">
                       <span class="">
-                                                                           <div class="control">
-                                                                    <div class="tags has-addons">
-                                                                      <span class="tag is-dark ">saved</span>
+                                                                               <div class="control">
+                                                                        <div class="tags has-addons">
+                                                                          <span class="tag is-dark ">saved</span>
                       <span class="tag is-primary"> {{count}}</span>
                   </div>
               </div>
@@ -70,18 +69,18 @@
               </a>
               <a class="level-item" aria-label="reply">
                 <span class="icon is-medium has-text-primary">
-                                                                          <i class="fas fa-reply" aria-hidden="true"></i>
-                                                                            </span>
+                                                                              <i class="fas fa-reply" aria-hidden="true"></i>
+                                                                                </span>
               </a>
               <a class="level-item" aria-label="retweet">
                 <span class="icon is-medium has-text-primary">
-                                                                      <i class="fas fa-retweet" aria-hidden="true"></i>
-                                                                    </span>
+                                                                          <i class="fas fa-retweet" aria-hidden="true"></i>
+                                                                        </span>
               </a>
               <a class="level-item" aria-label="like">
                 <span class="icon is-medium has-text-primary">
-                                                                      <i class="fas fa-heart" aria-hidden="true"></i>
-                                                                    </span>
+                                                                          <i class="fas fa-heart" aria-hidden="true"></i>
+                                                                        </span>
               </a>
             </div>
             </nav>
@@ -95,7 +94,7 @@
   </div>
   </section>
   <app-info></app-info>
-
+  
   <app-footer></app-footer>
   
   </div>
@@ -133,96 +132,155 @@
     computed: {
       ...mapGetters({
         model: 'getModel',
-        isModelLoading: 'isModelLoading'
+        isModelLoading: 'isModelLoading',
+        isTextLoading: 'isTextLoading'
       }),
       ...mapState([
         'model',
         'text',
-        'textStatus',
       ])
     },
     data() {
       return {
         message: "Robot",
-        count: 1
+        count: 1,
+        baffleInstance: {},
+        clicked: false
       };
     },
     methods: {
       doTensorProcess() {
+        if (!this.isModelLoading && !this.isTextLoading) {
+          this.clicked = true;
+          this.$store.dispatch('generateText', this.model).then(() => {
+            this.baffleInstance.text(currentText => this.text).reveal(1500);
+          });
+        }
   
-        this.$store.dispatch('generateText', this.model);
   
   
       },
     },
     created() {
       this.$store.dispatch('loadModel');
-   
-
+  
+  
     },
     mounted() {
-         let b = baffle('.baz', {
-    characters: '+-•~!=*',
-        speed: 200
+      this.baffleInstance = baffle('.baz', {
+        characters: "ℳℕ℘ⅈ№ℒℌℜ℗ℚ℣℥</>ΩÅℭℲℼⅅ⅀ℾℽⅉ⅋⅌</>▓░▒█▙▘▞▗▟▖▜▝▛▚",
+        speed: 70
       });
-      b.start();
-                 console.log(this.$refs.myDiv);
+  
+      this.baffleInstance.start();
     }
   };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="css" scoped>
-  @keyframes example {
-    0% {
-      background-color: red;
-      left: 0px;
-      top: 0px;
-    }
-    25% {
-      background-color: yellow;
-      left: 200px;
-      top: 0px;
-    }
-    50% {
-      background-color: blue;
-      left: 200px;
-      top: 200px;
-    }
-    75% {
-      background-color: green;
-      left: 0px;
-      top: 200px;
-    }
-    100% {
-      background-color: red;
-      left: 0px;
-      top: 0px;
-    }
-  }
-  
   .output {
     padding-top: 4.5%
-  }
-  
-  .brackets {
-    animation-name: example;
-    animation-duration: 4s;
   }
   
   .left-brackets::before {
     content: '[';
     left: 0;
-    font-weight: 600;
-    height: 40px;
-    font-size: 42px;
   }
   
   .right-brackets::before {
     content: ']';
     right: 0;
+  }
+  
+  .brackets:after,
+  .brackets:before {
+    top: 0;
     font-weight: 600;
+    color: #FFFF;
     height: 40px;
     font-size: 42px;
+    -webkit-animation-name: opacity;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-iteration-count: infinite;
+    animation-name: opacity;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+  }
+  
+  @-webkit-keyframes opacity {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  
+  @-webkit-keyframes change {
+    0%,
+    12%,
+    100% {
+      transform: translateY(0);
+    }
+    17%,
+    29% {
+      transform: translateY(-25%);
+    }
+    34%,
+    46% {
+      transform: translateY(-50%);
+    }
+    51%,
+    63% {
+      transform: translateY(-75%);
+    }
+    68%,
+    80% {
+      transform: translateY(-50%);
+    }
+    85%,
+    97% {
+      transform: translateY(-25%);
+    }
+  }
+  
+  @keyframes opacity {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes change {
+    0%,
+    12%,
+    100% {
+      transform: translateY(0);
+    }
+    17%,
+    29% {
+      transform: translateY(-25%);
+    }
+    34%,
+    46% {
+      transform: translateY(-50%);
+    }
+    51%,
+    63% {
+      transform: translateY(-75%);
+    }
+    68%,
+    80% {
+      transform: translateY(-50%);
+    }
+    85%,
+    97% {
+      transform: translateY(-25%);
+    }
   }
 </style>

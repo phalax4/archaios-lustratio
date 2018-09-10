@@ -46,7 +46,7 @@ const store = new Vuex.Store({
         }
       },
      async generateText (context, model) {
-      context.commit('pendingModel');
+      context.commit('pending');
       try{
          
         context.commit('setText',  await appService.generateText(model));
@@ -55,7 +55,7 @@ const store = new Vuex.Store({
           console.error(err);
           context.commit('fail');
       }
-      context.commit('successModel');
+      context.commit('success');
 
       },
       

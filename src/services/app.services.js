@@ -4,7 +4,7 @@ import input_chars from "../resources/pled/input_chars_pled.json";
 import * as tf from '@tensorflow/tfjs';
 const appService = {
      async generateText (modelT) {
-         console.log(modelT);
+        // console.log(modelT);
         let test_chars = "nte"; //input_chars["input"][sample_idx];
         let master = test_chars;
        // (async() => {
@@ -35,7 +35,7 @@ const appService = {
             return predictions.as1D().argMax();
           });
           const classId = await predictedClass.dataSync()[0];
-          console.log(classId);
+         // console.log(classId);
 
           let ypred = index2char[classId];
           predictedClass.dispose();
