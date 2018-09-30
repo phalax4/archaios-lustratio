@@ -50,12 +50,12 @@
   
                 </div>
   
-  
-                <div class="has-text-centered">
+              <nav class="level section is-mobile">
+                <div class="level-item has-text-centered">
                   <a class="button is-large is-primary" v-bind:class="{ 'is-loading': isModelLoading }" v-on:click="doTensorProcess">Go!</a>
                 </div>
-  
-                <nav class="level section is-mobile">
+              </nav>
+                <nav class="level is-mobile">
                   <div class="level-left">
                     <a class="level-item" aria-label="reply">
                       <span class="">
@@ -69,16 +69,12 @@
               </a>
               <a class="level-item" aria-label="reply">
                 <span class="icon is-medium has-text-primary">
-                                                                              <i class="fas fa-reply" aria-hidden="true"></i>
+                                                                              <i class="fas fa-download" aria-hidden="true"></i>
                                                                                 </span>
               </a>
-              <a class="level-item" aria-label="retweet">
-                <span class="icon is-medium has-text-primary">
-                                                                          <i class="fas fa-retweet" aria-hidden="true"></i>
-                                                                        </span>
-              </a>
+              
               <a class="level-item" aria-label="like">
-                <span class="icon is-medium has-text-primary">
+                <span v-on:click="incrementSaved" class="icon is-medium has-text-primary">
                                                                           <i class="fas fa-heart" aria-hidden="true"></i>
                                                                         </span>
               </a>
@@ -149,6 +145,10 @@
       };
     },
     methods: {
+      incrementSaved(){
+        this.count++;
+      },
+
       doTensorProcess() {
         if (!this.isModelLoading && !this.isTextLoading) {
           this.clicked = true;
