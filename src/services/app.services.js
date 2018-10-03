@@ -5,13 +5,15 @@ import * as tf from '@tensorflow/tfjs';
 const appService = {
      async generateText (modelT) {
         // console.log(modelT);
-        let test_chars = "nte"; //input_chars["input"][sample_idx];
+
+        let sample_idx = Math.floor(Math.random() * input_chars["input"].length);
+
+        let test_chars = input_chars["input"][sample_idx];
         let master = test_chars;
        // (async() => {
         const nb_chars = 154;
         const SEQLEN = 3;
 
-        let sample_idx = Math.floor(Math.random() * input_chars["input"].length);
        
         var test_chars_array = test_chars.split("");
         for (let t = 0; t < 10; t++) {

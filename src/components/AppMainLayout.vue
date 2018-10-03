@@ -68,7 +68,7 @@
               </span>
               </a>
               <a class="level-item" aria-label="reply">
-                <span class="icon is-medium has-text-primary">
+                <span v-on:click="downloadSaved" class="icon is-medium has-text-primary">
                                                                               <i class="fas fa-download" aria-hidden="true"></i>
                                                                                 </span>
               </a>
@@ -139,14 +139,25 @@
     data() {
       return {
         message: "Robot",
-        count: 1,
+        count: 0,
         baffleInstance: {},
-        clicked: false
+        clicked: false,
+        savedTexts: []
       };
     },
     methods: {
       incrementSaved(){
         this.count++;
+        this.savedTexts.push(this.text);
+      },
+      downloadSaved(){
+       // let t = ["hello", "nay"];
+ const url = window.URL.createObjectURL(new Blob([this.savedTexts]));
+   const link = document.createElement('a');
+   link.href = url;
+   link.setAttribute('download', 'file.txt'); //or any other extension
+   document.body.appendChild(link);
+   link.click();
       },
 
       doTensorProcess() {
