@@ -4,5 +4,7 @@ module.exports = {
       node: {
         fs: 'empty'
       }
-    }
+    },
+    publicPath: '/archaios-lustratio/',
+    outputDir: 'dist',
   }

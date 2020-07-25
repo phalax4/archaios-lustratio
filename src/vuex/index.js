@@ -35,7 +35,7 @@ const store = new Vuex.Store({
         context.commit('pendingModel');
 
         try{
-          const m = await tf.loadModel('../tfjs_75_pled/model.json')
+          const m = await tf.loadModel('tfjs_75_pled/model.json')
             context.commit('loadModel', m)
           context.commit('successModel');
 
